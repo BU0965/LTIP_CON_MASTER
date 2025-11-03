@@ -566,7 +566,7 @@
         // Initialize visible columns (first 12 columns visible by default)
         let visibleColumns = allColumns.slice(0, 12);
 
-        // GitHub Repository URL (येथे तुमचा GitHub URL टाका)
+        // GitHub Repository URL - तुमचा URL येथे सेट करा
         const GITHUB_REPO_URL = "https://bu0965.github.io/LTIP_CON_MASTER";
 
         // Generate months in format 202501, 202502, etc.
@@ -817,15 +817,13 @@
         }
 
         // Fetch file from GitHub repository
-        async function fetchFileFromGitHub(repoUrl, filePath) {
+        async function fetchFileFromGitHub(filePath) {
             try {
-                // Convert GitHub URL to raw content URL
-                const rawUrl = repoUrl
-                    .replace('github.com', 'raw.githubusercontent.com')
-                    .replace('/blob/', '/')
-                    .replace('/tree/', '/');
+                // GitHub Pages साठी direct URL वापरा
+                const fileUrl = `${GITHUB_REPO_URL}/${filePath}`;
+                console.log('Fetching file from:', fileUrl);
                 
-                const response = await fetch(`${rawUrl}/${filePath}`);
+                const response = await fetch(fileUrl);
                 if (!response.ok) {
                     throw new Error(`Failed to fetch file: ${response.status}`);
                 }
@@ -839,25 +837,26 @@
         }
 
         // Get list of files from GitHub repository
-        async function getFilesFromGitHub(repoUrl) {
+        async function getFilesFromGitHub() {
             try {
-                // Convert to GitHub API URL
-                const apiUrl = repoUrl
-                    .replace('github.com', 'api.github.com/repos')
-                    .replace('/tree/', '/contents/');
+                // GitHub Pages साठी files.json वापरा किंवा hardcode file list
+                // किंवा तुमच्या repository मध्ये files.json file तयार करा ज्यामध्ये सर्व Excel files ची यादी असेल
                 
-                const response = await fetch(apiUrl);
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch repository contents: ${response.status}`);
-                }
-                
-                const contents = await response.json();
-                
-                // Filter for Excel files
-                const excelFiles = contents.filter(item => 
-                    item.type === 'file' && 
-                    (item.name.endsWith('.xlsx') || item.name.endsWith('.xls'))
-                );
+                // Hardcoded file list - तुमच्या actual file names ने बदला
+                const excelFiles = [
+                    { name: "PC_CONSUMERS_MASTER_LIST_0965_00_202501.xls", path: "PC_CONSUMERS_MASTER_LIST_0965_00_202501.xls" },
+                    { name: "PC_CONSUMERS_MASTER_LIST_0965_00_202502.xls", path: "PC_CONSUMERS_MASTER_LIST_0965_00_202502.xls" },
+                    { name: "PC_CONSUMERS_MASTER_LIST_0965_00_202503.xls", path: "PC_CONSUMERS_MASTER_LIST_0965_00_202503.xls" },
+                    { name: "PC_CONSUMERS_MASTER_LIST_0965_00_202504.xls", path: "PC_CONSUMERS_MASTER_LIST_0965_00_202504.xls" },
+                    { name: "PC_CONSUMERS_MASTER_LIST_0965_00_202505.xls", path: "PC_CONSUMERS_MASTER_LIST_0965_00_202505.xls" },
+                    { name: "PC_CONSUMERS_MASTER_LIST_0965_00_202506.xls", path: "PC_CONSUMERS_MASTER_LIST_0965_00_202506.xls" },
+                    { name: "PC_CONSUMERS_MASTER_LIST_0965_00_202507.xls", path: "PC_CONSUMERS_MASTER_LIST_0965_00_202507.xls" },
+                    { name: "PC_CONSUMERS_MASTER_LIST_0965_00_202508.xls", path: "PC_CONSUMERS_MASTER_LIST_0965_00_202508.xls" },
+                    { name: "PC_CONSUMERS_MASTER_LIST_0965_00_202509.xls", path: "PC_CONSUMERS_MASTER_LIST_0965_00_202509.xls" },
+                    { name: "PC_CONSUMERS_MASTER_LIST_0965_00_202510.xls", path: "PC_CONSUMERS_MASTER_LIST_0965_00_202510.xls" },
+                    { name: "PC_CONSUMERS_MASTER_LIST_0965_00_202511.xls", path: "PC_CONSUMERS_MASTER_LIST_0965_00_202511.xls" },
+                    { name: "PC_CONSUMERS_MASTER_LIST_0965_00_202512.xls", path: "PC_CONSUMERS_MASTER_LIST_0965_00_202512.xls" }
+                ];
                 
                 return excelFiles;
             } catch (error) {
@@ -873,7 +872,7 @@
                 updateProgress(0, 'Fetching file list from GitHub...');
                 
                 // Get list of files from GitHub
-                const files = await getFilesFromGitHub(GITHUB_REPO_URL);
+                const files = await getFilesFromGitHub();
                 
                 if (files.length === 0) {
                     showNotification('No Excel files found in the repository', true);
@@ -900,7 +899,7 @@
                         updateProgress(Math.round((processedFiles / files.length) * 90) + 10, `Processing ${file.name}`);
                         
                         // Fetch file content
-                        const data = await fetchFileFromGitHub(GITHUB_REPO_URL, file.path);
+                        const data = await fetchFileFromGitHub(file.path);
                         const workbook = XLSX.read(data, { type: 'array' });
                         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
                         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
