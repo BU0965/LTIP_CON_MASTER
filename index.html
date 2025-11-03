@@ -567,7 +567,7 @@
         let visibleColumns = allColumns.slice(0, 12);
 
         // GitHub Repository URL (येथे तुमचा GitHub URL टाका)
-        const GITHUB_REPO_URL = "https://github.com/your-username/your-repository";
+        const GITHUB_REPO_URL = "https://bu0965.github.io/LTIP_CON_MASTER/";
 
         // Generate months in format 202501, 202502, etc.
         function generateMonths() {
@@ -873,7 +873,7 @@
                 updateProgress(0, 'Fetching file list from GitHub...');
                 
                 // Get list of files from GitHub
-                const files = await getFilesFromGitHub(GITHUB_REPO_URL);
+                const files = await getFilesFromGitHub(https://bu0965.github.io/LTIP_CON_MASTER/);
                 
                 if (files.length === 0) {
                     showNotification('No Excel files found in the repository', true);
@@ -900,7 +900,7 @@
                         updateProgress(Math.round((processedFiles / files.length) * 90) + 10, `Processing ${file.name}`);
                         
                         // Fetch file content
-                        const data = await fetchFileFromGitHub(GITHUB_REPO_URL, file.path);
+                        const data = await fetchFileFromGitHub(https://bu0965.github.io/LTIP_CON_MASTER/, file.path);
                         const workbook = XLSX.read(data, { type: 'array' });
                         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
                         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
@@ -1021,3 +1021,4 @@
     </script>
 </body>
 </html>
+
